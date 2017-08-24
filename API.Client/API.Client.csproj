@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <PreBuildEvent>
+      if $(Configuration) == Release (
+      dotnet publish "$(SolutionDir)API\API.csproj" --configuration "$(Configuration)"
+      
+      $(NSwagExe) webapi2swagger /assembly:"$(SolutionDir)API\bin\$(Configuration)\netcoreapp2.0\API.dll" /output:API.swagger.json
+      $(NSwagExe) swagger2csclient /input:API.swagger.json /classname:{controller}Client  /namespace:API.Client /output:Clients.Generated.cs
+
+      xcopy "Clients.Generated.cs" "$(SolutionDir)API.Client\" /y)
+    </PreBuildEvent>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+    <PackageReference Include="NSwag.AspNetCore" Version="11.4.3" />
+    <PackageReference Include="NSwag.MSBuild" Version="11.4.3" />
+  </ItemGroup>
+
+</Project>
